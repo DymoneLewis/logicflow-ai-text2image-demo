@@ -32,6 +32,12 @@ export class ImgGenerator {
     eventCenter.on("generate-start", () => {
       this.generateDesc();
     });
+    eventCenter.on("img-generator-focus", () => {
+      lf.keyboard.disable();
+    });
+    eventCenter.on("img-generator-blur", () => {
+      lf.keyboard.enable();
+    });
   }
 
   render(lf, domContainer) {
@@ -105,7 +111,7 @@ export class ImgGenerator {
 
   sceneInfoTranslater(sceneInfo) {
     const { time, place } = sceneInfo;
-    return `${time ? `${time}的` : ""}${place ? `${place}` : ""}`;
+    return `${time || ""}${place ? `在${place}` : ""}，`;
   }
 
   summaryTranslater(subjectNodes, behaviors) {

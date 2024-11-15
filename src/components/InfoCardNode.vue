@@ -14,6 +14,8 @@
           :clearable="item.clearable"
           :multiple="item.multiple"
           :allow-create="item.allowCreate"
+          @focus="onInfoCardNodeFocus"
+          @blur="onInfoCardNodeBlur"
         >
           <template v-if="item.type === 'groupSelect'">
             <el-option-group
@@ -58,6 +60,7 @@ export default {
       descData: {},
       node: null,
       type: "",
+      graph: null,
     };
   },
   computed: {
@@ -79,6 +82,15 @@ export default {
     this.$data.config = nodeFormConfig[type];
     this.$data.type = type;
     this.$data.node = this.getNode();
+    this.$data.graph = this.getGraph();
+  },
+  methods: {
+    onInfoCardNodeFocus() {
+      this.$data.graph.eventCenter.emit("info-card-select-focus");
+    },
+    onInfoCardNodeBlur() {
+      this.$data.graph.eventCenter.emit("info-card-select-blur");
+    },
   },
 };
 </script>

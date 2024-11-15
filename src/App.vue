@@ -76,6 +76,12 @@ export default {
       this.lf.on("connection:not-allowed", ({ msg }) => {
         this.$message.error(msg);
       });
+      this.lf.on("info-card-select-focus", () => {
+        this.lf.keyboard.disable();
+      });
+      this.lf.on("info-card-select-blur", () => {
+        this.lf.keyboard.enable();
+      });
     },
   },
 };

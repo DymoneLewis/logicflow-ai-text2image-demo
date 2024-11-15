@@ -1,5 +1,17 @@
 <template>
   <div class="img-generate-panel">
+    <el-divider content-position="left">API-key</el-divider>
+    <el-alert
+      title="注意：这个key的用量已经过半了，随时可能没办法调用。如果想要生成图片，推荐各位看官用自己的key嗷  2024.11.15"
+      type="warning"
+    >
+    </el-alert>
+    <el-input
+      v-model="apiKey"
+      placeholder="请输入API-key"
+      @focus="onGeneratePanelFocus"
+      @blur="onGeneratePanelBlur"
+    />
     <el-divider content-position="left">描述</el-divider>
     <div class="img-generate-panel-desc">{{ desc }}</div>
     <el-divider content-position="left">配置</el-divider>
@@ -90,6 +102,7 @@ export default {
       imgList: ["", "", "", ""],
       intervalId: "",
       imgLoading: false,
+      apiKey: "sk-ede6d92ca2024eaa8880b7c7b8541725",
     };
   },
   mounted() {
@@ -101,6 +114,14 @@ export default {
     },
   },
   methods: {
+    onGeneratePanelFocus(e) {
+      console.log("focus", e);
+      this.$props.lf.graphModel.eventCenter.emit("img-generator-focus");
+    },
+    onGeneratePanelBlur() {
+      console.log("blur");
+      this.$props.lf.graphModel.eventCenter.emit("img-generator-blur");
+    },
     async $_generateImg() {
       this.$props.lf.graphModel.eventCenter.emit("generate-start");
       const { desc } = this.$props;
@@ -124,7 +145,7 @@ export default {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: "Bearer sk-ede6d92ca2024eaa8880b7c7b8541725",
+            Authorization: `Bearer ${this.$data.key}`,
             "X-DashScope-Async": "enable",
           },
         }
@@ -159,7 +180,7 @@ export default {
         data: { code, message, output },
       } = await axios.get(`/ali/api/v1/tasks/${this.$data.taskId}`, {
         headers: {
-          Authorization: "Bearer sk-ede6d92ca2024eaa8880b7c7b8541725",
+          Authorization: `Bearer ${this.$data.key}`,
         },
       });
       if (code) {
