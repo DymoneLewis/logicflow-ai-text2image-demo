@@ -1,0 +1,93 @@
+<template>
+  <div :style="nodeStyle" class="lf-info-card-node">
+    <!-- <el-image style="width: 100px; height: 100px" :src="url" :fit="fit" /> -->
+    <el-form>
+      <el-form-item :label="item.label" v-for="item in config" :key="item.key">
+        <el-select
+          class="lf-info-card-node-selector"
+          size="mini"
+          v-model="descData[item.key]"
+          placeholder="请选择"
+          :filterable="item.filterable"
+          :clearable="item.clearable"
+          :multiple="item.multiple"
+        >
+          <template v-if="item.type === 'groupSelect'">
+            <el-option-group
+              v-for="group in item.options"
+              :key="group.label"
+              :label="group.label"
+            >
+              <el-option
+                v-for="item in group.options"
+                :key="item.label"
+                :label="item.label"
+                :value="item.label"
+              />
+            </el-option-group>
+          </template>
+          <template v-else>
+            <el-option
+              v-for="item in item.options"
+              :key="item.label"
+              :label="item.label"
+              :value="item.label"
+            />
+          </template>
+        </el-select>
+      </el-form-item>
+    </el-form>
+  </div>
+</template>
+
+<script>
+import { keys, isNil } from "lodash-es";
+import { nodeFormConfig } from "./config";
+
+export default {
+  name: "InfoCardNode",
+  inject: ["getNode", "getGraph"],
+  data() {
+    return {
+      keys,
+      config: {},
+      descData: {},
+      node: null,
+    };
+  },
+  computed: {
+    nodeStyle() {
+      if (isNil(this.$data.node)) return {};
+      return this.$data.node.getNodeStyle();
+    },
+  },
+  watch: {
+    descData: {
+      deep: true,
+      handler(newVal) {
+        this.$data.node.setProperties(newVal);
+      },
+    },
+  },
+  mounted() {
+    const { type } = this.getNode();
+    this.$data.config = nodeFormConfig[type];
+    this.$data.node = this.getNode();
+  },
+};
+</script>
+
+<style>
+.lf-info-card-node {
+  width: calc(90% - 12px);
+  height: calc(90% - 20px);
+  background: #fff;
+  /* margin: 4px; */
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.el-form-item__label {
+  line-height: 1;
+}
+</style>
