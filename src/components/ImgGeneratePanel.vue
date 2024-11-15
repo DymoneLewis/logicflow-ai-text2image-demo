@@ -128,6 +128,7 @@ export default {
       // "上午的花园里, 有1个幼年猫、1个幼年狗 和 1个青年女性, 其中1个幼年猫 和 1个幼年狗在玩耍,1个青年女性在看书";
       const { imgStyle, composition } = this.$data;
       this.$data.imgLoading = true;
+      console.log("process.env.NODE_ENV", process.env.NODE_ENV);
       const {
         data: { code, message, output },
       } = await axios.post(
