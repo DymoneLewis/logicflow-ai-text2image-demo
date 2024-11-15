@@ -306,6 +306,30 @@ export const behaviorOptionConfig = {
     },
   ],
 };
+// 主体与量词的映射，如果主体是人，就返回个，如果主体是动物就返回只，如果主体是植物就反馈棵
+export const subjectQuantifierMap = (type) => {
+  if (
+    ["动物", "猫", "老虎", "狗", "狼", "鹰", "鸽子", "鸭子", "天鹅"].includes(
+      type
+    )
+  )
+    return "只";
+  if (["鲤鱼", "金鱼", "金枪鱼", "鲨鱼"].includes(type)) return "条";
+  if (
+    [
+      "柳树",
+      "松树",
+      "橡树",
+      "银杏树",
+      "玫瑰",
+      "向日葵",
+      "牡丹",
+      "茉莉",
+    ].includes(type)
+  )
+    return "棵";
+  return "个";
+};
 
 // export const adjectiveOptionConfig = {
 //   adjective: [
@@ -545,12 +569,18 @@ export const nodeFormConfig = {
       label: "时间",
       type: "select",
       options: sceneOptionConfig.time,
+      filterable: true,
+      clearable: true,
+      allowCreate: true,
     },
     {
       key: "place",
       label: "地点",
       type: "select",
       options: sceneOptionConfig.place,
+      filterable: true,
+      clearable: true,
+      allowCreate: true,
     },
   ],
   subjectNode: [
@@ -561,6 +591,7 @@ export const nodeFormConfig = {
       options: subjectOptionConfig.emotion,
       filterable: true,
       clearable: true,
+      allowCreate: true,
     },
     {
       key: "somatotype",
@@ -569,6 +600,7 @@ export const nodeFormConfig = {
       options: subjectOptionConfig.somatotype,
       filterable: true,
       clearable: true,
+      allowCreate: true,
     },
     {
       key: "hair",
@@ -577,6 +609,7 @@ export const nodeFormConfig = {
       options: subjectOptionConfig.hair,
       filterable: true,
       clearable: true,
+      allowCreate: true,
     },
     {
       key: "type",
@@ -585,6 +618,7 @@ export const nodeFormConfig = {
       options: subjectOptionConfig.type,
       filterable: true,
       clearable: true,
+      allowCreate: true,
     },
   ],
   behaviorNode: [
@@ -593,6 +627,9 @@ export const nodeFormConfig = {
       label: "行为",
       type: "select",
       options: behaviorOptionConfig.behavior,
+      filterable: true,
+      clearable: true,
+      allowCreate: true,
     },
   ],
   // adjectiveNode: [

@@ -2,6 +2,7 @@
 import Vue from "vue";
 import { isEmpty, flattenDeep, uniqBy } from "lodash-es";
 import ImgGeneratePanel from "./ImgGeneratePanel.vue";
+import { subjectQuantifierMap } from "./config";
 
 export class ImgGenerator {
   static pluginName = "imgGenerator";
@@ -88,18 +89,15 @@ export class ImgGenerator {
     const result = Object.values(counts).map(
       ({ emotion, hair, somatotype, type, count }) => {
         return withCount
-          ? `${count}个${emotion}${somatotype}${hair}${type}`
+          ? `${count}${subjectQuantifierMap(
+              type
+            )}${emotion}${somatotype}${hair}${type}`
           : `${emotion}${somatotype}${hair}${type}`;
       }
     );
     // 处理连接符，将最后一个描述项与前面的项用“和”连接
     if (result.length > 1) {
-      return (
-        "有" +
-        result.slice(0, -1).join("、") +
-        " 和 " +
-        result[result.length - 1]
-      );
+      return result.slice(0, -1).join("、") + "和" + result[result.length - 1];
     } else {
       return result[0];
     }
@@ -114,7 +112,7 @@ export class ImgGenerator {
     if (subjectNodes.length > 2) {
       const behaviorDesc =
         behaviors.slice(0, -1).join("、") +
-        " 和 " +
+        "和" +
         behaviors[behaviors.length - 1];
       return `有${this.statisticalSubject(
         subjectNodes

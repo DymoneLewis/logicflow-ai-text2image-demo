@@ -13,6 +13,7 @@
           :filterable="item.filterable"
           :clearable="item.clearable"
           :multiple="item.multiple"
+          :allow-create="item.allowCreate"
         >
           <template v-if="item.type === 'groupSelect'">
             <el-option-group
