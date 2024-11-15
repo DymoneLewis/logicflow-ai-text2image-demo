@@ -1,11 +1,7 @@
 <template>
   <div class="img-generate-panel">
     <el-divider content-position="left">API-key</el-divider>
-    <el-alert
-      title="注意：这个key的用量已经过半了，随时可能没办法调用。如果想要生成图片，推荐各位看官用自己的key嗷  2024.11.15"
-      type="warning"
-    >
-    </el-alert>
+    <el-alert :title="alertInfo" type="warning"> </el-alert>
     <el-input
       v-model="apiKey"
       placeholder="请输入API-key"
@@ -111,6 +107,11 @@ export default {
   computed: {
     generateDisabled() {
       return ["PENDING", "RUNNING"].includes(this.$data.taskStauts);
+    },
+    alertInfo() {
+      return process.env.NODE_ENV === "development"
+        ? "注意：这个key的用量已经过半了，随时可能没办法调用。如果想要生成图片，推荐各位看官用自己的key嗷  2024.11.15"
+        : "注意：由于跨域限制，线上demo无法成功请求接口，想要体验功能推荐把项目down下来运行嗷  2024.11.15";
     },
   },
   methods: {
