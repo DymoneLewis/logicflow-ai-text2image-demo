@@ -131,7 +131,9 @@ export default {
       const {
         data: { code, message, output },
       } = await axios.post(
-        "/ali/api/v1/services/aigc/text2image/image-synthesis",
+        process.env.NODE_ENV === "production"
+          ? "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis"
+          : "/ali/api/v1/services/aigc/text2image/image-synthesis",
         {
           model: "wanx-v1",
           input: {
@@ -145,7 +147,7 @@ export default {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${this.$data.key}`,
+            Authorization: `Bearer ${this.$data.apiKey}`,
             "X-DashScope-Async": "enable",
           },
         }
@@ -178,11 +180,16 @@ export default {
       if (!this.$data.taskId) return;
       const {
         data: { code, message, output },
-      } = await axios.get(`/ali/api/v1/tasks/${this.$data.taskId}`, {
-        headers: {
-          Authorization: `Bearer ${this.$data.key}`,
-        },
-      });
+      } = await axios.get(
+        process.env.NODE_ENV === "production"
+          ? `https://dashscope.aliyuncs.com/api/v1/tasks/${this.$data.taskId}`
+          : `/ali/api/v1/tasks/${this.$data.taskId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${this.$data.apiKey}`,
+          },
+        }
+      );
       if (code) {
         this.$message.error(message);
 
