@@ -114,12 +114,10 @@ export default {
     },
   },
   methods: {
-    onGeneratePanelFocus(e) {
-      console.log("focus", e);
+    onGeneratePanelFocus() {
       this.$props.lf.graphModel.eventCenter.emit("img-generator-focus");
     },
     onGeneratePanelBlur() {
-      console.log("blur");
       this.$props.lf.graphModel.eventCenter.emit("img-generator-blur");
     },
     async $_generateImg() {
@@ -128,13 +126,10 @@ export default {
       // "上午的花园里, 有1个幼年猫、1个幼年狗 和 1个青年女性, 其中1个幼年猫 和 1个幼年狗在玩耍,1个青年女性在看书";
       const { imgStyle, composition } = this.$data;
       this.$data.imgLoading = true;
-      console.log("process.env.NODE_ENV", process.env.NODE_ENV);
       const {
         data: { code, message, output },
       } = await axios.post(
-        process.env.NODE_ENV === "production"
-          ? "https://dashscope.aliyuncs.com/api/v1/services/aigc/text2image/image-synthesis"
-          : "/ali/api/v1/services/aigc/text2image/image-synthesis",
+        "/ali/api/v1/services/aigc/text2image/image-synthesis",
         {
           model: "wanx-v1",
           input: {
@@ -181,16 +176,11 @@ export default {
       if (!this.$data.taskId) return;
       const {
         data: { code, message, output },
-      } = await axios.get(
-        process.env.NODE_ENV === "production"
-          ? `https://dashscope.aliyuncs.com/api/v1/tasks/${this.$data.taskId}`
-          : `/ali/api/v1/tasks/${this.$data.taskId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${this.$data.apiKey}`,
-          },
-        }
-      );
+      } = await axios.get(`/ali/api/v1/tasks/${this.$data.taskId}`, {
+        headers: {
+          Authorization: `Bearer ${this.$data.apiKey}`,
+        },
+      });
       if (code) {
         this.$message.error(message);
 
