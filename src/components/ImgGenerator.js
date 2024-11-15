@@ -107,7 +107,7 @@ export class ImgGenerator {
 
   sceneInfoTranslater(sceneInfo) {
     const { time, place } = sceneInfo;
-    return `${time ? `${time}的` : ""}${place ? `${place}里` : ""}`;
+    return `${time ? `${time}的` : ""}${place ? `${place}` : ""}`;
   }
 
   summaryTranslater(subjectNodes, behaviors) {

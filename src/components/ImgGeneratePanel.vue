@@ -46,7 +46,7 @@
     </el-row>
     <el-divider content-position="left">图片生成</el-divider>
     <el-row :gutter="10">
-      <el-col :span="24">
+      <el-col :span="24" v-loading="imgLoading">
         <el-image
           :key="index"
           v-for="(imgUrl, index) in imgList"
@@ -89,6 +89,7 @@ export default {
       taskStauts: "",
       imgList: ["", "", "", ""],
       intervalId: "",
+      imgLoading: false,
     };
   },
   mounted() {
@@ -105,6 +106,7 @@ export default {
       const { desc } = this.$props;
       // "上午的花园里, 有1个幼年猫、1个幼年狗 和 1个青年女性, 其中1个幼年猫 和 1个幼年狗在玩耍,1个青年女性在看书";
       const { imgStyle, composition } = this.$data;
+      this.$data.imgLoading = true;
       const {
         data: { code, message, output },
       } = await axios.post(
@@ -117,7 +119,6 @@ export default {
           parameters: {
             style: imgStyle || "<auto>",
             size: composition || "1024*1024",
-            n: 1,
           },
         },
         {
@@ -130,6 +131,7 @@ export default {
       );
       if (code) {
         this.$message.error(message);
+        this.$data.imgLoading = false;
         return;
       }
       const { task_id, task_status } = output;
@@ -146,6 +148,7 @@ export default {
           this.$data.taskId &&
           ["SUCCEEDED", "FAILED", "UNKNOWN"].includes(this.$data.taskStauts)
         ) {
+          this.$data.imgLoading = false;
           clearInterval(this.intervalId);
         }
       }, 5000);
@@ -161,6 +164,7 @@ export default {
       });
       if (code) {
         this.$message.error(message);
+
         return;
       }
       if (!isEmpty(output.results)) {

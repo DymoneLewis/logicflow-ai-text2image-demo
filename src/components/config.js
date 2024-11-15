@@ -46,24 +46,24 @@ export const nodeType2Model = (type) => {
 export const nodeTypeProperties = {
   // 节点默认样式映射
   sceneNode: {
-    width: 140,
-    height: 200,
+    width: 240,
+    height: 240,
     style: {
       background: "#fff",
       border: "3px solid #f57170",
     },
   },
   subjectNode: {
-    width: 140,
-    height: 340,
+    width: 240,
+    height: 400,
     style: {
       background: "#fff",
       border: "3px solid #15b7b9",
     },
   },
   behaviorNode: {
-    width: 140,
-    height: 100,
+    width: 240,
+    height: 140,
     style: {
       background: "#fff",
       border: "3px solid #ffde7d",
@@ -91,7 +91,10 @@ export const sceneOptionConfig = {
       label: "下午",
     },
     {
-      label: "晚上",
+      label: "傍晚",
+    },
+    {
+      label: "深夜",
     },
   ],
   place: [
@@ -423,8 +426,12 @@ export class SceneNodeModel extends VueNodeModel {
       message: "场景节点只能连接两个主体节点",
       validate: (source) => {
         let isValid = true;
-        console.log(source.outgoing.nodes.length);
-        if (source.outgoing.nodes.length > 2) {
+        console.log(
+          "source.outgoing.nodes.length",
+          source,
+          source.outgoing.nodes.length
+        );
+        if (source.outgoing.nodes.length >= 2) {
           isValid = false;
         }
         return isValid;
@@ -446,12 +453,6 @@ export class SubjectNodeModel extends VueNodeModel {
     const { x, y, id, width, height } = this;
     const anchors = [
       {
-        x: x - width / 2,
-        y: y - height / 4,
-        id: `${id}_adjective`,
-        type: "adjective",
-      },
-      {
         x: x + width / 2,
         y: y + height / 4,
         id: `${id}_right`,
@@ -465,6 +466,31 @@ export class SubjectNodeModel extends VueNodeModel {
       },
     ];
     return anchors;
+  }
+  getConnectedSourceRules() {
+    const rules = super.getConnectedSourceRules();
+    const behaviorNodeOnlyAsTarget = {
+      message: "主体节点的下一个节点只能是主体节点",
+      validate: (source, target) => {
+        let isValid = true;
+        if (target.type !== "behaviorNode") {
+          isValid = false;
+        }
+        return isValid;
+      },
+    };
+    const onlyCanAddOneTarget = {
+      message: "一个主体节点只能连接一个行为节点",
+      validate: (source) => {
+        let isValid = true;
+        if (source.outgoing.nodes.length >= 1) {
+          isValid = false;
+        }
+        return isValid;
+      },
+    };
+    assign(rules, [behaviorNodeOnlyAsTarget, onlyCanAddOneTarget]);
+    return rules;
   }
 }
 

@@ -1,6 +1,8 @@
 <template>
   <div :style="nodeStyle" class="lf-info-card-node">
-    <!-- <el-image style="width: 100px; height: 100px" :src="url" :fit="fit" /> -->
+    <el-divider content-position="center"
+      >{{ nodeTypeZhMap[type] }}描述</el-divider
+    >
     <el-form>
       <el-form-item :label="item.label" v-for="item in config" :key="item.key">
         <el-select
@@ -42,17 +44,19 @@
 
 <script>
 import { keys, isNil } from "lodash-es";
-import { nodeFormConfig } from "./config";
+import { nodeFormConfig, nodeTypeZhMap } from "./config";
 
 export default {
   name: "InfoCardNode",
   inject: ["getNode", "getGraph"],
   data() {
     return {
+      nodeTypeZhMap,
       keys,
       config: {},
       descData: {},
       node: null,
+      type: "",
     };
   },
   computed: {
@@ -72,6 +76,7 @@ export default {
   mounted() {
     const { type } = this.getNode();
     this.$data.config = nodeFormConfig[type];
+    this.$data.type = type;
     this.$data.node = this.getNode();
   },
 };
@@ -80,11 +85,14 @@ export default {
 <style>
 .lf-info-card-node {
   width: calc(90% - 12px);
-  height: calc(90% - 20px);
+  height: calc(96% - 20px);
   background: #fff;
   /* margin: 4px; */
   padding: 10px;
   border-radius: 10px;
+}
+.lf-info-card-nod-title {
+  margin-bottom: 10px;
 }
 
 .el-form-item__label {
