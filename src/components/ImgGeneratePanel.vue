@@ -1,13 +1,13 @@
 <template>
   <div class="img-generate-panel">
-    <!-- <el-divider content-position="left">API-key</el-divider>
+    <el-divider content-position="left">API-key</el-divider>
     <el-alert :title="alertInfo" type="warning"> </el-alert>
     <el-input
       v-model="apiKey"
       placeholder="请输入API-key"
       @focus="onGeneratePanelFocus"
       @blur="onGeneratePanelBlur"
-    /> -->
+    />
     <el-divider content-position="left">描述</el-divider>
     <div class="img-generate-panel-desc">{{ desc }}</div>
     <el-divider content-position="left">配置</el-divider>
@@ -117,7 +117,7 @@ export default {
     },
     alertInfo() {
       return process.env.NODE_ENV === "development"
-        ? "注意：这个key的用量已经过半了，随时可能没办法调用。如果想要生成图片，推荐各位看官用自己的key嗷  2024.11.15"
+        ? "注意：这个key的用量已经过半了，随时可能没办法调用。如果不能用了，各位看官可以到阿里云百炼平台申请自己的Api-Key粘贴到此处使用嗷  2024.11.19"
         : "注意：由于跨域限制，线上demo无法成功请求接口，想要体验功能推荐把项目down下来运行嗷  2024.11.15";
     },
   },
