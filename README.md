@@ -1,4 +1,4 @@
-# logicflow-vue2-demo
+# 流程编排×AI生图 小工具
 
 ## Project setup
 ```
