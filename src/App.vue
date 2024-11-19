@@ -33,7 +33,6 @@ export default {
   methods: {
     getNodePatternConfig(type) {
       // 生成节点在拖拽面板上的映射
-
       return {
         type,
         label: nodeTypeZhMap[type],

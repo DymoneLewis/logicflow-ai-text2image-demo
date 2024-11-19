@@ -494,7 +494,7 @@ export class SubjectNodeModel extends VueNodeModel {
   getConnectedSourceRules() {
     const rules = super.getConnectedSourceRules();
     const behaviorNodeOnlyAsTarget = {
-      message: "主体节点的下一个节点只能是主体节点",
+      message: "主体节点的下一个节点只能是行为节点",
       validate: (source, target) => {
         let isValid = true;
         if (target.type !== "behaviorNode") {

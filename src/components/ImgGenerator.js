@@ -69,9 +69,10 @@ export class ImgGenerator {
     const result = this.convertDataToPrompt(data);
     this.desc = result;
     this.panelComponent.componentInstance.$props.desc = result;
+    this.lf.graphModel.eventCenter.emit("generate-request-start", result);
   }
 
-  statisticalSubject(data, withCount = true) {
+  subjectInfoTranslate(data, withCount = true) {
     // 初始化一个对象用于统计不同年龄和类型的数量
     const counts = {};
     // 遍历每个节点，统计每种年龄和类型的出现次数
@@ -109,18 +110,18 @@ export class ImgGenerator {
     }
   }
 
-  sceneInfoTranslater(sceneInfo) {
+  sceneInfoTranslate(sceneInfo) {
     const { time, place } = sceneInfo;
     return `${time || ""}${place ? `在${place}` : ""}，`;
   }
 
-  summaryTranslater(subjectNodes, behaviors) {
+  summaryTranslate(subjectNodes, behaviors) {
     if (subjectNodes.length > 2) {
       const behaviorDesc =
         behaviors.slice(0, -1).join("、") +
         "和" +
         behaviors[behaviors.length - 1];
-      return `有${this.statisticalSubject(
+      return `有${this.subjectInfoTranslate(
         subjectNodes
       )}在${behaviorDesc}, 其中`;
     }
@@ -138,7 +139,7 @@ export class ImgGenerator {
 
     if (sceneNodeInfo) {
       const { id, properties } = sceneNodeInfo;
-      sceneDesc = this.sceneInfoTranslater(properties);
+      sceneDesc = this.sceneInfoTranslate(properties);
       const sceneNodeModel = this.lf.graphModel.getNodeModelById(id);
       const { nodes } = sceneNodeModel.outgoing;
       subjects = nodes.filter((node) => node.type === "subjectNode");
@@ -157,17 +158,17 @@ export class ImgGenerator {
       "id"
     );
     if (!isEmpty(subjects)) {
-      subjectDesc = this.statisticalSubject(subjects);
+      subjectDesc = this.subjectInfoTranslate(subjects);
     }
     if (!isEmpty(behaviors)) {
-      summary = this.summaryTranslater(subjects, behaviors);
-      // subjectDesc = statisticalSubject(nodes, false);
+      summary = this.summaryTranslate(subjects, behaviors);
+      // subjectDesc = subjectInfoTranslate(nodes, false);
       behaviorDesc = behaviors
         .map((behaviorItem) => {
           const subjects = behaviorItem.incoming.nodes.filter(
             (node) => node.type === "subjectNode"
           );
-          return `${this.statisticalSubject(subjects)}在${
+          return `${this.subjectInfoTranslate(subjects)}在${
             behaviorItem.properties.behavior
           }`;
         })

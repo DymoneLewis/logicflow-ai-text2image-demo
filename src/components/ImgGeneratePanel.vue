@@ -1,13 +1,13 @@
 <template>
   <div class="img-generate-panel">
-    <el-divider content-position="left">API-key</el-divider>
+    <!-- <el-divider content-position="left">API-key</el-divider>
     <el-alert :title="alertInfo" type="warning"> </el-alert>
     <el-input
       v-model="apiKey"
       placeholder="请输入API-key"
       @focus="onGeneratePanelFocus"
       @blur="onGeneratePanelBlur"
-    />
+    /> -->
     <el-divider content-position="left">描述</el-divider>
     <div class="img-generate-panel-desc">{{ desc }}</div>
     <el-divider content-position="left">配置</el-divider>
@@ -46,7 +46,7 @@
           icon="el-icon-video-play"
           round
           :disabled="generateDisabled"
-          @click="$_generateImg"
+          @click="onGenerateBtnClick"
         >
           生成
         </el-button>
@@ -54,7 +54,11 @@
     </el-row>
     <el-divider content-position="left">图片生成</el-divider>
     <el-row :gutter="10">
-      <el-col :span="24" v-loading="imgLoading">
+      <el-col
+        :span="24"
+        v-loading="imgLoading"
+        element-loading-text="模型的算法调用时间较长，请稍等...（预计等待30s左右"
+      >
         <el-image
           :key="index"
           v-for="(imgUrl, index) in imgList"
@@ -103,6 +107,9 @@ export default {
   },
   mounted() {
     this.$_getGenerateStatus();
+    this.$props.lf.graphModel.eventCenter.on("generate-request-start", () => {
+      this.$_generateImg();
+    });
   },
   computed: {
     generateDisabled() {
@@ -121,10 +128,12 @@ export default {
     onGeneratePanelBlur() {
       this.$props.lf.graphModel.eventCenter.emit("img-generator-blur");
     },
-    async $_generateImg() {
+    onGenerateBtnClick() {
       this.$props.lf.graphModel.eventCenter.emit("generate-start");
+    },
+    async $_generateImg() {
       const { desc } = this.$props;
-      // "上午的花园里, 有1个幼年猫、1个幼年狗 和 1个青年女性, 其中1个幼年猫 和 1个幼年狗在玩耍,1个青年女性在看书";
+      if (!desc) return;
       const { imgStyle, composition } = this.$data;
       this.$data.imgLoading = true;
       const {
