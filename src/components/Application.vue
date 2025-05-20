@@ -1,14 +1,23 @@
 <template>
   <div ref="application" class="application">
-    <div>isSilentMode: {{ isSilentMode }}</div>
-    <div>{{ properties.tableName }}</div>
-    <div>hoverStatus: {{ model.isHovered }}</div>
-    <div>selectStatus: {{ model.isSelected }}</div>
-    <input v-model="inputValue" />
-    <div>{{ inputValue }}</div>
-    <button :disabled="isSilentMode" @click="handleClick">
+    <div>
+      isSilentMode: {{ graphModel.editConfigModel?.isSilentMode
+      }}{{ isSilentMode }}
+    </div>
+    <el-input
+      v-model="inputValue"
+      type="number"
+      placeholder="请输入数字"
+      style="width: 100%; margin-bottom: 20px"
+      :disabled="isSilentMode"
+      :min="0"
+      :max="100"
+      :step="1"
+      :size="'small'"
+    ></el-input>
+    <el-button :disabled="isSilentMode" @click="handleClick">
       点击复制HtmlNode
-    </button>
+    </el-button>
   </div>
 </template>
 
@@ -19,6 +28,10 @@ export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Application",
   props: {
+    graphModel: {
+      type: Object,
+      default: () => ({}),
+    },
     properties: {
       type: Object,
       default: () => ({}),
@@ -35,7 +48,7 @@ export default {
     };
   },
   updated() {
-    console.log("updated model", this.model.isSelected);
+    console.log("updated model", this.$props.graphModel, this.$props.model);
   },
   watch: {
     properties: {

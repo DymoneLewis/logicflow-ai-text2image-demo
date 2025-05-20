@@ -1,21 +1,21 @@
 <template>
   <div id="app">
-    <div>
+    <div class="operae-btn-panel">
       <!-- <el-button @click="changeWidthHeight">修改节点宽高</el-button> -->
-      <el-button @click="changeSilentMode">修改静默</el-button>
+      <el-button @click="changeSilentMode">修改静默状态</el-button>
+      <el-button @click="changeSnapGrid">修改网格吸附</el-button>
     </div>
-
     <div class="lf-container" ref="container"></div>
   </div>
 </template>
 
 <script>
 import LogicFlow from "@logicflow/core";
-import { DndPanel, MiniMap } from "@logicflow/extension";
+import { DndPanel, MiniMap, SelectionSelect } from "@logicflow/extension";
 import "@logicflow/core/lib/style/index.css";
 import "@logicflow/extension/lib/style/index.css";
 import InfoCardNode from "./components/InfoCardNode";
-import { ImgGenerator } from "./components/ImgGenerator";
+// import { ImgGenerator } from "./components/ImgGenerator";
 import SubFlowNode from "./components/SubFlowNode.vue";
 import CustomHtmlNode from "./components/customHtmlNode";
 
@@ -47,6 +47,14 @@ export default {
       console.log("isSilentMode", isSilentMode);
       this.lf.updateEditConfig({
         isSilentMode: !isSilentMode,
+      });
+    },
+    changeSnapGrid() {
+      const { editConfigModel } = this.lf.graphModel;
+      const { snapGrid } = editConfigModel;
+      console.log("snapGrid", snapGrid);
+      this.lf.updateEditConfig({
+        snapGrid: !snapGrid,
       });
     },
     changeWidthHeight() {
@@ -118,7 +126,12 @@ export default {
         },
         edgeType: "polyline",
         container: this.$refs.container,
-        plugins: [DndPanel, MiniMap, ImgGenerator],
+        plugins: [
+          DndPanel,
+          MiniMap,
+          // ImgGenerator,
+          SelectionSelect,
+        ],
       });
 
       const pattern = [];
@@ -141,22 +154,41 @@ export default {
         },
         lf
       );
-      lf.setPatternItems(pattern);
+      lf.setPatternItems([
+        {
+          label: "选区",
+          callback: () => {
+            lf.openSelectionSelect();
+            lf.once("selection:selected", () => {
+              lf.closeSelectionSelect();
+            });
+          },
+        },
+        {
+          type: "applicationNode",
+          label: "自定义Html节点",
+          properties: {
+            width: 400,
+            height: 400,
+          },
+        },
+        ...pattern,
+      ]);
       lf.register(CustomHtmlNode);
       this.lf = lf;
       window.lf = lf;
       this.lf.render({
         nodes: [
-          {
-            id: 1,
-            type: "applicationNode",
-            x: 100,
-            y: 100,
-            properties: {
-              width: 400,
-              height: 400,
-            },
-          },
+          // {
+          //   id: 1,
+          //   type: "applicationNode",
+          //   x: 100,
+          //   y: 100,
+          // properties: {
+          //   width: 400,
+          //   height: 400,
+          // },
+          // },
           // {
           //   id: 2,
           //   type: "subFlow",
@@ -221,7 +253,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="less">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -245,18 +277,19 @@ export default {
   border-radius: 10px;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
   justify-content: space-evenly;
   align-items: center;
 }
 .lf-dnd-item {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   border: 1px solid #acacac;
   border-radius: 10px;
 }
 .lf-dnd-shape {
-  width: 100%;
-  height: 100%;
+  width: 10px;
+  height: 10px;
   margin-bottom: 10px;
 }
 .lf-generate-panel {
@@ -272,5 +305,20 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.operae-btn-panel {
+  display: flex;
+  /* gap: 20px; */
+  padding: 20px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+
+  .el-button {
+    margin: 10px 0;
+    font-size: 14px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
 }
 </style>

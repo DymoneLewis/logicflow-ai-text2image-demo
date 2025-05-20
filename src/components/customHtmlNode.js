@@ -45,49 +45,57 @@ class ApplicationNode extends HtmlNode {
     const { isSilentMode } = graphModel.editConfigModel;
     console.log("isSilentMode in setHtml", isSilentMode, !this.isMounted);
     // 写法1：通过Vue.extend创建中间组件挂载实际组件
-    // if (!this.isMounted) {
-    //   const el = document.createElement("div");
-    //   rootEl.innerHTML = "";
-    //   rootEl.appendChild(el);
-    //   const Profile = Vue.extend({
-    //     render: (h) => {
-    //       return h(Application, {
-    //         props: {
-    //           properties,
-    //           model: this.props.model,
-    //           isSilentMode,
-    //         },
-    //       });
-    //     },
-    //   });
-    //   this.customComponent = new Profile();
-    //   this.customComponent.$mount(el);
-    //   this.isMounted = true;
-    //   return;
-    // }
-    // // 因为使用Propfile创建的是中间组件，所以需要通过$children[0]获取实际组件
-    // console.log("isSilentMode in setHtml", this.customComponent.$children[0]);
-    // this.customComponent.$children[0].isSilentMode = isSilentMode;
-
-    // 写法2：通过Vue.extend创建实际组件
     if (!this.isMounted) {
       const el = document.createElement("div");
       rootEl.innerHTML = "";
       rootEl.appendChild(el);
-      const ApplicationCon = Vue.extend(Application, {
-        props: {
-          properties,
-          model: this.props.model,
-          isSilentMode,
+      const Profile = Vue.extend({
+        render: (h) => {
+          return h(Application, {
+            props: {
+              properties,
+              model: this.props.model,
+              isSilentMode,
+            },
+          });
         },
       });
-      this.customComponent = new ApplicationCon();
+      this.customComponent = new Profile();
       this.customComponent.$mount(el);
       this.isMounted = true;
       return;
     }
-    console.log("isSilentMode in setHtml", this.customComponent);
-    this.customComponent.isSilentMode = isSilentMode;
+    // 因为使用Propfile创建的是中间组件，所以需要通过$children[0]获取实际组件
+    console.log("isSilentMode in setHtml", this.customComponent.$children[0]);
+    this.customComponent.$children[0].isSilentMode = isSilentMode;
+    this.customComponent.$children[0].properties =
+      this.props.model.getProperties();
+    this.customComponent.$children[0].model = this.props.model;
+    this.customComponent.$children[0].graphModel = graphModel;
+
+    // 写法2：通过Vue.extend创建实际组件
+    // if (!this.isMounted) {
+    //   const el = document.createElement("div");
+    //   rootEl.innerHTML = "";
+    //   rootEl.appendChild(el);
+    //   const ApplicationCon = Vue.extend(Application, {
+    //     props: {
+    //       graphModel,
+    //       properties,
+    //       model: this.props.model,
+    //       isSilentMode,
+    //     },
+    //   });
+    //   this.customComponent = new ApplicationCon();
+    //   this.customComponent.$mount(el);
+    //   this.isMounted = true;
+    //   return;
+    // }
+    // console.log("isSilentMode in setHtml", this.customComponent);
+    // this.customComponent.isSilentMode = isSilentMode;
+    // this.customComponent.properties = this.props.model.getProperties();
+    // this.customComponent.model = this.props.model;
+    // this.customComponent.graphModel = graphModel;
 
     // 写法3：通过h函数创建组件
     // const { graphModel, properties, id, isHovered, isSelected } =
@@ -120,7 +128,7 @@ class ApplicationNode extends HtmlNode {
     // // 效果可以看右侧的node-4
   }
   componentWillUnmount() {
-    this.vueItem.unmount();
+    this.vueItem?.unmount();
     this.isMounted = false;
     this.vueItem = null;
     this.rootEl.innerHTML = "";
