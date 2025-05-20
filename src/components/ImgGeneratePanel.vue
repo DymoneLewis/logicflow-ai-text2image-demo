@@ -1,6 +1,7 @@
 <template>
   <div class="img-generate-panel">
-    <el-divider content-position="left">API-key</el-divider>
+    <div ref="subContainer"></div>
+    <!-- <el-divider content-position="left">API-key</el-divider>
     <el-alert :title="alertInfo" type="warning"> </el-alert>
     <el-input
       v-model="apiKey"
@@ -72,13 +73,16 @@
           </div>
         </el-image>
       </el-col>
-    </el-row>
+    </el-row> -->
   </div>
 </template>
 
 <script>
 import LogicFlow from "@logicflow/core";
 import axios from "axios";
+import { DndPanel, MiniMap } from "@logicflow/extension";
+import "@logicflow/core/lib/style/index.css";
+import "@logicflow/extension/lib/style/index.css";
 import { isEmpty } from "lodash-es";
 import { imgStyleOptionConfig, imgSizeOptionConfig } from "./config";
 
@@ -93,6 +97,7 @@ export default {
   },
   data() {
     return {
+      subLf: null,
       imgStyleOptionConfig,
       imgSizeOptionConfig,
       imgStyle: "",
@@ -110,6 +115,7 @@ export default {
     this.$props.lf.graphModel.eventCenter.on("generate-request-start", () => {
       this.$_generateImg();
     });
+    this.$_initLf();
   },
   computed: {
     generateDisabled() {
@@ -122,6 +128,64 @@ export default {
     },
   },
   methods: {
+    $_initLf() {
+      // 画布配置
+      const lfIns = new LogicFlow({
+        grid: {
+          enabled: true,
+          type: "mesh",
+          size: 10,
+        },
+        height: 800,
+        width: 400,
+        background: {
+          color: "#f6f8fa",
+        },
+        allowResize: true, // 全局的节点缩放配置
+        allowRotate: true, // 全局的节点旋转配置
+        keyboard: {
+          enabled: true,
+        },
+        edgeType: "polyline",
+        container: this.$refs.subContainer,
+        plugins: [DndPanel, MiniMap],
+      });
+
+      const pattern = [];
+      lfIns.setPatternItems(pattern);
+      this.subLf = lfIns;
+      this.subLf.render({
+        nodes: [
+          {
+            id: 1,
+            type: "rect",
+            x: 100,
+            y: 100,
+            text: "生成图片",
+            properties: {
+              text: "生成图片",
+            },
+          },
+          {
+            id: 2,
+            type: "rect",
+            x: 200,
+            y: 200,
+            text: "生成图片",
+            properties: {
+              text: "生成图片",
+            },
+          },
+        ],
+        edges: [
+          {
+            type: "polyline",
+            sourceNodeId: 1,
+            targetNodeId: 2,
+          },
+        ],
+      });
+    },
     onGeneratePanelFocus() {
       this.$props.lf.graphModel.eventCenter.emit("img-generator-focus");
     },
