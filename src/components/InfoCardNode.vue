@@ -86,6 +86,7 @@ export default {
   },
   methods: {
     onInfoCardNodeFocus() {
+      console.log("onInfoCardNodeFocus");
       this.$data.graph.eventCenter.emit("info-card-select-focus");
     },
     onInfoCardNodeBlur() {
