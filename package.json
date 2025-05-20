@@ -11,9 +11,9 @@
   "dependencies": {
     "@antv/layout": "1.2.14-beta.8",
     "@babel/plugin-transform-private-methods": "^7.25.4",
-    "@logicflow/core": "^2.0.13",
+    "@logicflow/core": "^2.0.11",
     "@logicflow/engine": "^0.1.1",
-    "@logicflow/extension": "^2.0.18",
+    "@logicflow/extension": "^2.0.15",
     "@logicflow/layout": "1.2.0-alpha.16",
     "@logicflow/vue-node-registry": "^1.0.15",
     "axios": "^1.7.7",

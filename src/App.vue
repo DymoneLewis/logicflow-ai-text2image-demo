@@ -11,7 +11,13 @@
 
 <script>
 import LogicFlow from "@logicflow/core";
-import { DndPanel, MiniMap, SelectionSelect } from "@logicflow/extension";
+import {
+  Menu,
+  DndPanel,
+  MiniMap,
+  SelectionSelect,
+  DynamicGroup,
+} from "@logicflow/extension";
 import "@logicflow/core/lib/style/index.css";
 import "@logicflow/extension/lib/style/index.css";
 import InfoCardNode from "./components/InfoCardNode";
@@ -127,10 +133,12 @@ export default {
         edgeType: "polyline",
         container: this.$refs.container,
         plugins: [
+          Menu,
           DndPanel,
           MiniMap,
           // ImgGenerator,
           SelectionSelect,
+          DynamicGroup,
         ],
       });
 
@@ -154,6 +162,49 @@ export default {
         },
         lf
       );
+      lf.extension.menu.setMenuByType({
+        type: "lf:defaultSelectionMenu",
+        menu: [
+          {
+            text: "组合",
+            icon: true,
+            callback: (data) => {
+              let minX = Infinity;
+              let minY = Infinity;
+              let maxX = -Infinity;
+              let maxY = -Infinity;
+              console.log("data", data);
+              data.nodes.forEach((node) => {
+                minX = Math.min(minX, node.x - node.properties.width / 2);
+                minY = Math.min(minY, node.y - node.properties.height / 2);
+                maxX = Math.max(maxX, node.x + node.properties.width / 2);
+                maxY = Math.max(maxY, node.y + node.properties.height / 2);
+              });
+              const width = maxX - minX;
+              const height = maxY - minY;
+
+              const centerX = minX + width / 2;
+              const centerY = minY + height / 2;
+              const groupNode = this.lf.graphModel.addNode({
+                type: "dynamic-group",
+                x: centerX,
+                y: centerY,
+                resizable: true,
+                properties: {
+                  width: width + 40,
+                  height: height + 40,
+                },
+              });
+
+              data.nodes.forEach((node) => {
+                groupNode.addChild(node.id);
+              });
+              this.lf.graphModel.selectNodeById(groupNode.id);
+              console.log("groupNode", groupNode);
+            },
+          },
+        ],
+      });
       lf.setPatternItems([
         {
           label: "选区",
@@ -179,36 +230,27 @@ export default {
       window.lf = lf;
       this.lf.render({
         nodes: [
-          // {
-          //   id: 1,
-          //   type: "applicationNode",
-          //   x: 100,
-          //   y: 100,
-          // properties: {
-          //   width: 400,
-          //   height: 400,
-          // },
-          // },
-          // {
-          //   id: 2,
-          //   type: "subFlow",
-          //   x: 500,
-          //   y: 500,
-          //   properties: {
-          //     width: 400,
-          //     height: 400,
-          //   },
-          // },
-          // {
-          //   id: 2,
-          //   type: "subFlow",
-          //   x: 500,
-          //   y: 500,
-          //   properties: {
-          //     width: 400,
-          //     height: 400,
-          //   },
-          // },
+          {
+            id: 1,
+            type: "sceneNode",
+            x: 300,
+            y: 500,
+            properties: {
+              width: 200,
+              height: 200,
+            },
+          },
+          {
+            id: 2,
+            type: "behaviorNode",
+            x: 600,
+            y: 500,
+            rotate: 0.25,
+            properties: {
+              width: 200,
+              height: 120,
+            },
+          },
         ],
         edges: [
           // {
